@@ -5,7 +5,7 @@ Daniel Pelagio
 program to read array of numbers from a file, sort them and write them in a new file
 |#
 
-
+;; meterle una lista y hacerla recursica para guardar todo el archivo en 
 (define (read-numbers file)
     (let 
         (
