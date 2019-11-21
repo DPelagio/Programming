@@ -27,9 +27,11 @@ driver.find_element_by_id("address_country_canada").click()
 
 start_date = driver.find_element_by_id('address_birthday')
 type1 = 'string'
-date2 = '10/10/1999'
+date2 = '15/11/2019'
 driver.execute_script('arguments[0].setAttribute("type", "%s")' % type1, start_date)
 driver.execute_script('arguments[0].setAttribute("value", "%s")' % date2, start_date)
+color2 = "#FF5733"
+driver.execute_script('arguments[0].setAttribute("value", "%s")' % color2, driver.find_element_by_id('address_color'))
 driver.find_element_by_id("address_age").send_keys("30")
 driver.find_element_by_id("address_website").send_keys("https://a.testaddressbook.com")
 driver.find_element_by_id("address_picture").send_keys("/Users/pelagio/Documents/GitHub/Programming/Sem7/pruebas/text.txt")
