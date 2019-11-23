@@ -83,7 +83,7 @@ A01227873
         )
         ; Show the list
         (displayln data)
-        ; Send each number to be processed
+        ; Send each number to
         (for-each (lambda (message) (channel-put channel-work message)) data)
         (for-each (thread-wait threads))
     )
