@@ -1,0 +1,71 @@
+//Comandos para crear los nodos
+
+docker run -d -v \
+$PWD/redis.conf:/usr/local/etc/redis/redis.conf \
+--name redis-1 --net cluster-network \
+redis redis-server /usr/local/etc/redis/redis.conf
+
+docker run -d -v \
+$PWD/redis.conf:/usr/local/etc/redis/redis.conf \
+--name redis-2 --net cluster-network \
+redis redis-server /usr/local/etc/redis/redis.conf
+
+docker run -d -v \
+$PWD/redis.conf:/usr/local/etc/redis/redis.conf \
+--name redis-3 --net cluster-network \
+redis redis-server /usr/local/etc/redis/redis.conf
+
+docker run -d -v \
+$PWD/redis.conf:/usr/local/etc/redis/redis.conf \
+--name redis-4 --net cluster-network \
+redis redis-server /usr/local/etc/redis/redis.conf
+
+docker run -d -v \
+$PWD/redis.conf:/usr/local/etc/redis/redis.conf \
+--name redis-5 --net cluster-network \
+redis redis-server /usr/local/etc/redis/redis.conf
+
+docker run -d -v \
+$PWD/redis.conf:/usr/local/etc/redis/redis.conf \
+--name redis-6 --net cluster-network \
+redis redis-server /usr/local/etc/redis/redis.conf
+
+docker run -d -v \
+$PWD/redis.conf:/usr/local/etc/redis/redis.conf \
+--name redis-7 --net cluster-network \
+redis redis-server /usr/local/etc/redis/redis.conf
+
+--------------------------------------------------------------------
+
+//Con esto checas la ip de los contenedores
+docker inspect -f '{{ (index .NetworkSettings.Networks "cluster-network").IPAddress }}' redis-1
+
+//Con esto creamos el cluster con los nodos creados
+docker run -it --network cluster-network --rm redis redis-cli --cluster create 172.19.0.2:6379 172.19.0.3:6379 172.19.0.4:6379 172.19.0.5:6379 172.19.0.6:6379 172.19.0.7:6379 --cluster-replicas 1
+
+//Checamos el estado de los nodos
+docker exec redis-2 redis-cli cluster nodes
+
+//Nos metemos a alguno de los nodos
+docker run -it --network cluster-network --rm redis redis-cli -c -h redis-1 -p 6379
+docker run -it --network cluster-network --rm redis redis-cli -c -h redis-2 -p 6379
+docker run -it --network cluster-network --rm redis redis-cli -c -h redis-3 -p 6379
+
+#Obtener master id
+docker exec -ti redis-6379 bash -c "redis-cli cluster info"
+
+#resharding
+docker run -it --network cluster-network --rm redis redis-cli --cluster reshard 172.19.0.2:6379 -c -h redis-6379
+
+# --------------------------------
+# -------- Paso 6 ---------
+# --------------------------------
+
+docker run -it --network cluster-network --rm redis redis-cli -c -h redis-1 debug segfault
+docker run -it --network cluster-network --rm redis redis-cli -c -h redis-6380 debug segfault
+docker run -it --network cluster-network --rm redis redis-cli -c -h redis-6381 debug segfault
+docker exec redis-1 redis-cli cluster nodes | grep master
+
+sudo docker run -it --network cluster-network --rm redis redis-cli --cluster add-node 172.19.0.2:6379 172.19.0.3:6379 --cluster-replicas 1
+sudo docker run -it --network cluster-network --rm redis redis-cli --cluster del-node 172.19.0.2:6379 38ac91f0c86c0e41a839e533d47430b0d33c3609
+
